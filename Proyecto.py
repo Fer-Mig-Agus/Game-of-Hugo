@@ -14,7 +14,7 @@ fondo_original = pygame.image.load("fondo.jpg")  # Asegúrate de que la imagen e
 fondo = pygame.transform.scale(fondo_original, (ancho, alto))  # Redimensionar imagen al tamaño de la pantalla
 
 # Cargar fondo de la pantalla de juego
-fondo_juego_original = pygame.image.load("screenPlay.png")  # Asegúrate de que la imagen esté en el mismo directorio
+fondo_juego_original = pygame.image.load("screenPlay.jpg")  # Asegúrate de que la imagen esté en el mismo directorio
 fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))
 
 # Colores
@@ -66,26 +66,40 @@ def dibujar_menu(mouse_pos):
     pygame.display.flip()  # Actualizar pantalla
 
 # Función para dibujar la pantalla de juego
-def dibujar_juego():
+def dibujar_juego(mouse_pos):
+    pantalla.blit(fondo_juego, (0, 0))  # Dibujar fondo de juego
+
+    # Botones de juego
+    dibujar_boton("Jugar", ancho // 2 - 100, 300, 200, 50)
+    dibujar_boton("Volver", ancho // 2 - 100, 400, 200, 50)
+
+    pygame.display.flip()  # Actualizar pantalla
+
+# Función para dibujar la pantalla "dentro del juego"
+def dibujar_dentro_juego(preguntas_realizadas, errores, acertados):
     pantalla.blit(fondo_juego, (0, 0))  # Dibujar fondo de juego
 
     # Mostrar estadísticas
     fuente = pygame.font.Font(None, 54)
-    preguntas_label = fuente.render("Preguntas (1/20)", True, negro)
-    errores_label = fuente.render("Errores (0)", True, negro)
-    acertados_label = fuente.render("Acertados (1)", True, negro)
+    preguntas_label = fuente.render(f"Preguntas ({preguntas_realizadas}/20)", True, negro)
+    errores_label = fuente.render(f"Errores ({errores})", True, negro)
+    acertados_label = fuente.render(f"Acertados ({acertados})", True, negro)
 
     pantalla.blit(preguntas_label, (50, 50))
     pantalla.blit(errores_label, (50, 120))
     pantalla.blit(acertados_label, (50, 190))
 
-    # Dibujar botón de inicio
-    dibujar_boton("Start", ancho // 2 - 100, 300, 200, 50)
+    # Botón de volver
+    dibujar_boton("Volver", ancho // 2 - 100, 400, 200, 50)
 
     pygame.display.flip()  # Actualizar pantalla
 
 # Bucle principal del juego
-en_juego = False  # Variable para controlar si estamos en la pantalla de juego
+en_menu = True  # Para controlar si estamos en el menú
+en_juego = False  # Para controlar si estamos en la pantalla de juego
+preguntas_realizadas = 0
+errores = 0
+acertados = 0
 
 while True:
     for evento in pygame.event.get():
@@ -97,17 +111,36 @@ while True:
             if evento.button == 1:  # Verificar si se hizo clic con el botón izquierdo del ratón
                 mouse_pos = pygame.mouse.get_pos()
                 
-                if not en_juego:
+                if en_menu:
                     # Comprobar si se presionó el botón "Inicio"
                     if pygame.Rect(ancho // 2 - 100, 200, 200, 50).collidepoint(mouse_pos):
-                        en_juego = True  # Cambiar a la pantalla de juego
+                        en_menu = False  # Cambiar a la pantalla de juego
+                    # Aquí podrías agregar lógica para Puntajes y Ayuda si lo deseas
+
+                elif not en_juego:
+                    # En la pantalla de juego
+                    if pygame.Rect(ancho // 2 - 100, 300, 200, 50).collidepoint(mouse_pos):
+                        en_juego = True  # Ir a dentro del juego
+                    elif pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
+                        en_menu = True  # Volver al menú
+
+                else:
+                    # Dentro del juego
+                    if pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
+                        en_juego = False  # Volver a la pantalla de juego
+                        preguntas_realizadas = 0  # Resetear valores
+                        errores = 0
+                        acertados = 0
 
     # Redimensionar la imagen de fondo si la ventana cambia de tamaño
     fondo = pygame.transform.scale(fondo_original, (pantalla.get_width(), pantalla.get_height()))
     fondo_juego = pygame.transform.scale(fondo_juego_original, (pantalla.get_width(), pantalla.get_height()))
 
-    if en_juego:
-        dibujar_juego()  # Dibujar la pantalla de juego
-    else:
+    if en_menu:
         mouse_pos = pygame.mouse.get_pos()
         dibujar_menu(mouse_pos)  # Dibujar el menú
+    elif not en_juego:
+        mouse_pos = pygame.mouse.get_pos()
+        dibujar_juego(mouse_pos)  # Dibujar la pantalla de juego
+    else:
+        dibujar_dentro_juego(preguntas_realizadas, errores, acertados)  # Dibujar la pantalla dentro del juego
