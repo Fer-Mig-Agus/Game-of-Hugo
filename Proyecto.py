@@ -10,10 +10,8 @@ pantalla = pygame.display.set_mode((ancho, alto), pygame.RESIZABLE)
 pygame.display.set_caption("Juega con Hugo")
 
 # Cargar imágenes
-fondo_original = pygame.image.load("fondo.jpg")
-fondo = pygame.transform.scale(fondo_original, (ancho, alto))
-fondo_juego_original = pygame.image.load("screenPlay.jpg")
-fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))
+fondo_juego_original = pygame.image.load("vias.PNG")  # Cargar la nueva imagen de fondo
+fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))  # Redimensionar fondo
 
 # Cargar imágenes de Hugo y el vagón y redimensionar
 hugo_imagen = pygame.image.load("hugo.png")
@@ -50,7 +48,7 @@ def dibujar_boton(texto, pos_x, pos_y, ancho, alto, hover=False):
 
 # Función para dibujar el menú
 def dibujar_menu(mouse_pos):
-    pantalla.blit(fondo, (0, 0))
+    pantalla.fill(blanco)  # Limpiar pantalla con color blanco
     botones = [
         (ancho // 2 - 100, 200, "Inicio"),
         (ancho // 2 - 100, 300, "Puntajes"),
@@ -64,7 +62,6 @@ def dibujar_menu(mouse_pos):
 
 # Función para dibujar la pantalla de juego
 def dibujar_juego(mouse_pos):
-    # Dibujar el fondo del juego
     pantalla.fill(blanco)  # Limpiar pantalla con color blanco
     dibujar_boton("Jugar", ancho // 2 - 100, 300, 200, 50)
     dibujar_boton("Volver", ancho // 2 - 100, 400, 200, 50)
@@ -73,13 +70,13 @@ def dibujar_juego(mouse_pos):
 # Función para manejar la animación
 def animar_fondo():
     global fondo_y, animando
-    fondo_y += 5  # Mueve el fondo hacia arriba
+    fondo_y += 2.5  # Mueve el fondo hacia arriba, velocidad reducida a la mitad
     if fondo_y >= alto:  # Si el fondo se ha movido completamente
         fondo_y = 0  # Reinicia la posición
 
     # Dibujar el fondo desplazándose
-    pantalla.blit(fondo, (0, fondo_y - alto))  # Parte superior
-    pantalla.blit(fondo, (0, fondo_y))  # Parte inferior
+    pantalla.blit(fondo_juego, (0, fondo_y - alto))  # Parte superior
+    pantalla.blit(fondo_juego, (0, fondo_y))  # Parte inferior
 
     # Dibujar el vagón y a Hugo en el centro
     pantalla.blit(vagon_imagen, (ancho // 2 - 25, alto // 2 + 25))  # Dibujar el vagón en el medio
@@ -116,4 +113,3 @@ while True:
     else:
         mouse_pos = pygame.mouse.get_pos()
         dibujar_juego(mouse_pos)  # Dibujar la pantalla de juego
-
