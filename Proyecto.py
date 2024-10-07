@@ -10,7 +10,12 @@ pantalla = pygame.display.set_mode((ancho, alto), pygame.RESIZABLE)
 pygame.display.set_caption("Juega con Hugo")
 
 # Cargar imágenes
-fondo_inicio = pygame.image.load("fondo.jpg")
+fondo_inicio_original = pygame.image.load("fondo.jpg")
+fondo_inicio = pygame.transform.scale(fondo_inicio_original, (ancho, alto))
+
+fondo_juego_previo_original = pygame.image.load("screenPlay.jpg")
+fondo_juego_previo = pygame.transform.scale(fondo_juego_previo_original, (ancho, alto))
+
 fondo_juego_original = pygame.image.load("vias.PNG")
 fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))
 
@@ -56,7 +61,7 @@ def dibujar_menu(mouse_pos):
 
 # Función para dibujar la pantalla de juego previo
 def dibujar_juego_previo(mouse_pos):
-    pantalla.fill((255, 255, 255))  # Limpiar pantalla con color blanco
+    pantalla.blit(fondo_juego_previo, (0, 0))  # Usar el fondo de la pantalla previa
     dibujar_boton("Jugar", ancho // 2 - 100, 300, 200, 50)
     dibujar_boton("Volver", ancho // 2 - 100, 400, 200, 50)
     pygame.display.flip()
