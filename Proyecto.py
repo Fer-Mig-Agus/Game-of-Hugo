@@ -5,8 +5,8 @@ import sys
 pygame.init()
 
 # Configurar la pantalla
-ancho, alto = 800, 600
-pantalla = pygame.display.set_mode((ancho, alto), pygame.RESIZABLE)
+ancho, alto = 800, 630  # Aumentar 30px en la altura
+pantalla = pygame.display.set_mode((ancho, alto))  # No se permite redimensionar
 pygame.display.set_caption("Juega con Hugo")
 
 # Cargar imágenes
@@ -128,4 +128,3 @@ while True:
         dibujar_juego_previo(mouse_pos)
     elif en_juego:
         dibujar_juego()
-
