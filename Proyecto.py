@@ -27,9 +27,14 @@ vagon_imagen = pygame.transform.scale(vagon_imagen, (50, 100))
 
 # Colores
 negro = (0, 0, 0)
+blanco = (255, 255, 255)
 
-# Variables para la animación
+# Variables para la animación y el juego
 fondo_y = 0
+preguntas_realizadas = 0
+acertadas = 0
+errores = 0
+vidas = 3
 en_inicio = True
 en_juego_previo = False
 en_juego = False
@@ -80,12 +85,20 @@ def animar_fondo():
 # Función para dibujar la pantalla de juego
 def dibujar_juego():
     animar_fondo()  # Dibuja la animación
-    fuente = pygame.font.Font(None, 15)
-    
+    fuente = pygame.font.Font(None, 20)
+
     # Labels
-    label = fuente.render("Estadísticas: (0/0)", True, negro)
-    pantalla.blit(label, (10, 10))
-    
+    label_preguntas = fuente.render(f"Preguntas: {preguntas_realizadas}/20", True, negro)
+    label_acertadas = fuente.render(f"Acertadas: {acertadas}", True, negro)
+    label_errores = fuente.render(f"Erradas: {errores}", True, negro)
+    label_vidas = fuente.render(f"Vidas: {'♥' * vidas}", True, negro)
+
+    # Dibujar los labels en la pantalla
+    pantalla.blit(label_preguntas, (10, 10))
+    pantalla.blit(label_acertadas, (10, 40))
+    pantalla.blit(label_errores, (10, 70))
+    pantalla.blit(label_vidas, (10, 100))
+
     # Navbar
     dibujar_boton("Volver", ancho - 100, 10, 80, 30)  # Botón Volver en la navbar
     pygame.display.flip()
