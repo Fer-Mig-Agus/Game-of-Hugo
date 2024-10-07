@@ -50,7 +50,24 @@ preguntas = [
     ("¿Quién escribió 'Cien años de soledad'?", ["Gabriel García Márquez", "Pablo Neruda", "Jorge Luis Borges", "Julio Cortázar"], "Gabriel García Márquez"),
     ("¿Cuál es el planeta más grande del sistema solar?", ["Marte", "Júpiter", "Saturno", "Tierra"], "Júpiter"),
     ("¿En qué año llegó el hombre a la luna?", ["1969", "1970", "1965", "1975"], "1969"),
+    ("¿Cuál es el océano más grande del mundo?", ["Atlántico", "Índico", "Pacífico", "Ártico"], "Pacífico"),
+    ("¿Qué gas respiramos los humanos?", ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Helio"], "Oxígeno"),
+    ("¿Quién pintó la Mona Lisa?", ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"], "Leonardo da Vinci"),
+    ("¿Cuál es el río más largo del mundo?", ["Nilo", "Amazonas", "Yangtsé", "Misisipi"], "Amazonas"),
+    ("¿En qué continente se encuentra Egipto?", ["Asia", "África", "Europa", "Oceanía"], "África"),
+    ("¿Cuál es el idioma más hablado en el mundo?", ["Inglés", "Mandarín", "Español", "Hindi"], "Mandarín"),
+    ("¿Qué tipo de animal es un delfín?", ["Pez", "Mamífero", "Reptil", "Aves"], "Mamífero"),
+    ("¿Cuál es la capital de Japón?", ["Seúl", "Tokio", "Pekín", "Bangkok"], "Tokio"),
+    ("¿Quién escribió 'Don Quijote de la Mancha'?", ["Miguel de Cervantes", "Lope de Vega", "Gabriel García Márquez", "Jorge Luis Borges"], "Miguel de Cervantes"),
+    ("¿Cuál es el metal más ligero?", ["Hierro", "Aluminio", "Plomo", "Litio"], "Litio"),
+    ("¿En qué año se descubrió América?", ["1492", "1500", "1480", "1520"], "1492"),
+    ("¿Quién fue el primer presidente de los Estados Unidos?", ["George Washington", "Thomas Jefferson", "Abraham Lincoln", "John Adams"], "George Washington"),
+    ("¿Cuál es la capital de Argentina?", ["Santiago", "Montevideo", "Buenos Aires", "Lima"], "Buenos Aires"),
+    ("¿Qué órgano del cuerpo humano produce insulina?", ["Hígado", "Páncreas", "Riñón", "Corazón"], "Páncreas"),
+    ("¿Cuál es el deporte más popular del mundo?", ["Fútbol", "Baloncesto", "Críquet", "Tenis"], "Fútbol"),
+    ("¿Qué instrumento mide la temperatura?", ["Barómetro", "Termómetro", "Higrómetro", "Anemómetro"], "Termómetro"),
 ]
+
 
 # Función para dibujar botones
 def dibujar_boton(texto, pos_x, pos_y, ancho, alto, hover=False):
