@@ -33,7 +33,6 @@ fondo_y = 0
 en_inicio = True
 en_juego_previo = False
 en_juego = False
-animando = False
 
 # Función para dibujar botones
 def dibujar_boton(texto, pos_x, pos_y, ancho, alto, hover=False):
@@ -61,14 +60,14 @@ def dibujar_menu(mouse_pos):
 
 # Función para dibujar la pantalla de juego previo
 def dibujar_juego_previo(mouse_pos):
-    pantalla.blit(fondo_juego_previo, (0, 0))  # Usar el fondo de la pantalla previa
+    pantalla.blit(fondo_juego_previo, (0, 0))
     dibujar_boton("Jugar", ancho // 2 - 100, 300, 200, 50)
     dibujar_boton("Volver", ancho // 2 - 100, 400, 200, 50)
     pygame.display.flip()
 
 # Función para manejar la animación
 def animar_fondo():
-    global fondo_y, animando
+    global fondo_y
     fondo_y += 2.5
     if fondo_y >= alto:
         fondo_y = 0
@@ -77,10 +76,9 @@ def animar_fondo():
     pantalla.blit(fondo_juego, (0, fondo_y))
     pantalla.blit(vagon_imagen, (ancho // 2 - 25, alto // 2 + 25))
     pantalla.blit(hugo_imagen, (ancho // 2 - 12.5, alto // 2 - 25))
-    pygame.display.flip()
 
 # Función para dibujar la pantalla de juego
-def dibujar_juego(mouse_pos):
+def dibujar_juego():
     animar_fondo()  # Dibuja la animación
     fuente = pygame.font.Font(None, 15)
     
@@ -88,8 +86,8 @@ def dibujar_juego(mouse_pos):
     label = fuente.render("Estadísticas: (0/0)", True, negro)
     pantalla.blit(label, (10, 10))
     
-    # Botón de volver
-    dibujar_boton("Volver", ancho - 100, 10, 80, 30)
+    # Navbar
+    dibujar_boton("Volver", ancho - 100, 10, 80, 30)  # Botón Volver en la navbar
     pygame.display.flip()
 
 # Bucle principal del juego
@@ -112,13 +110,15 @@ while True:
                     if pygame.Rect(ancho // 2 - 100, 300, 200, 50).collidepoint(mouse_pos):
                         en_juego_previo = False
                         en_juego = True
-                        animando = True
                     elif pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
                         en_inicio = True  # Regresa al menú
+                        en_juego_previo = False  # Asegúrate de que no estemos en juego previo
                 elif en_juego:
                     if pygame.Rect(ancho - 100, 10, 80, 30).collidepoint(mouse_pos):
                         en_juego = False  # Volver a la pantalla de juego previo
-                        animando = False  # Detener la animación
+                        en_juego_previo = True  # Asegurarse de que estamos en la pantalla previa
+                        #global fondo_y  # Asegurarse de que se detenga la animación
+                        fondo_y = 0  # Reiniciar la posición del fondo
 
     if en_inicio:
         mouse_pos = pygame.mouse.get_pos()
@@ -126,5 +126,6 @@ while True:
     elif en_juego_previo:
         mouse_pos = pygame.mouse.get_pos()
         dibujar_juego_previo(mouse_pos)
-    elif en_juego and animando:
-        dibujar_juego(mouse_pos)
+    elif en_juego:
+        dibujar_juego()
+
