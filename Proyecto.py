@@ -15,9 +15,11 @@ fondo = pygame.transform.scale(fondo_original, (ancho, alto))
 fondo_juego_original = pygame.image.load("screenPlay.jpg")
 fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))
 
-# Cargar imágenes de Hugo y el vagón
-hugo_imagen = pygame.image.load("hugo.png")  # Asegúrate de que la imagen esté en el mismo directorio
-vagon_imagen = pygame.image.load("vagon.png")  # Asegúrate de que la imagen esté en el mismo directorio
+# Cargar imágenes de Hugo y el vagón y redimensionar
+hugo_imagen = pygame.image.load("hugo.png")
+hugo_imagen = pygame.transform.scale(hugo_imagen, (25, 50))  # Redimensionar a 25px x 50px
+vagon_imagen = pygame.image.load("vagon.png")
+vagon_imagen = pygame.transform.scale(vagon_imagen, (50, 100))  # Redimensionar a 50px x 100px
 
 # Colores
 blanco = (255, 255, 255)
@@ -32,7 +34,7 @@ preguntas = [
 ]
 
 # Variables para la animación
-pos_x_hugo = -100  # Comienza fuera de la pantalla
+pos_y_hugo = alto  # Comienza fuera de la pantalla (abajo)
 en_juego = False  # Controla si estamos en la pantalla de juego
 animando = False  # Controla si la animación está en curso
 
@@ -68,14 +70,14 @@ def dibujar_juego(mouse_pos):
 
 # Función para manejar la animación
 def animar_hugo():
-    global pos_x_hugo, animando
-    if pos_x_hugo < ancho:
+    global pos_y_hugo, animando
+    if pos_y_hugo > -50:  # Mantener a Hugo dentro de la pantalla
         pantalla.blit(fondo_juego, (0, 0))  # Redibuja el fondo del juego
-        pantalla.blit(vagon_imagen, (0, alto // 2))  # Dibuja el vagón en la posición deseada
-        pantalla.blit(hugo_imagen, (pos_x_hugo, alto // 2))  # Dibuja a Hugo sobre el vagón
-        pos_x_hugo += 5  # Aumenta la posición de Hugo para que avance
+        pantalla.blit(vagon_imagen, (ancho // 2 - 25, alto - 100))  # Dibuja el vagón en la parte inferior
+        pantalla.blit(hugo_imagen, (ancho // 2 - 12.5, pos_y_hugo))  # Dibuja a Hugo en la posición deseada
+        pos_y_hugo -= 5  # Mueve a Hugo hacia arriba
     else:
-        pos_x_hugo = -100  # Reinicia la posición de Hugo si sale de la pantalla
+        pos_y_hugo = alto  # Reinicia la posición de Hugo si sale de la pantalla
     pygame.display.flip()
 
 # Bucle principal del juego
@@ -95,7 +97,7 @@ while True:
                 elif animando:  # En el juego
                     if pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
                         en_juego = False  # Volver al menú
-                        pos_x_hugo = -100  # Reiniciar la posición de Hugo
+                        pos_y_hugo = alto  # Reiniciar la posición de Hugo
                         animando = False  # Detener la animación
 
     if en_juego and animando:
