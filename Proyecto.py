@@ -31,10 +31,12 @@ blanco = (255, 255, 255)
 
 # Variables para la animación y el juego
 fondo_y = 0
-preguntas_realizadas = 0
-acertadas = 0
-errores = 0
-vidas = 3
+preguntas_realizadas = 0  # Estado inicial
+acertadas = 0  # Estado inicial
+errores = 0  # Estado inicial
+vidas = 5  # Estado inicial
+kilometros_recorridos = 0  # Estado inicial
+contador_activo = False  # Para controlar el inicio del conteo de kilómetros
 en_inicio = True
 en_juego_previo = False
 en_juego = False
@@ -84,6 +86,7 @@ def animar_fondo():
 
 # Función para dibujar la pantalla de juego
 def dibujar_juego():
+    global kilometros_recorridos
     animar_fondo()  # Dibuja la animación
     fuente = pygame.font.Font(None, 20)
 
@@ -92,18 +95,21 @@ def dibujar_juego():
     label_acertadas = fuente.render(f"Acertadas: {acertadas}", True, negro)
     label_errores = fuente.render(f"Erradas: {errores}", True, negro)
     label_vidas = fuente.render(f"Vidas: {'♥' * vidas}", True, negro)
+    label_kilometros = fuente.render(f"Kilómetros: {kilometros_recorridos:.2f}", True, negro)
 
     # Dibujar los labels en la pantalla
     pantalla.blit(label_preguntas, (10, 10))
     pantalla.blit(label_acertadas, (10, 40))
     pantalla.blit(label_errores, (10, 70))
     pantalla.blit(label_vidas, (10, 100))
+    pantalla.blit(label_kilometros, (10, 130))
 
     # Navbar
     dibujar_boton("Volver", ancho - 100, 10, 80, 30)  # Botón Volver en la navbar
     pygame.display.flip()
 
 # Bucle principal del juego
+clock = pygame.time.Clock()  # Para controlar el tiempo
 while True:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
@@ -123,6 +129,8 @@ while True:
                     if pygame.Rect(ancho // 2 - 100, 300, 200, 50).collidepoint(mouse_pos):
                         en_juego_previo = False
                         en_juego = True
+                        #global contador_activo
+                        contador_activo = True  # Activar el contador de kilómetros
                     elif pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
                         en_inicio = True  # Regresa al menú
                         en_juego_previo = False  # Asegúrate de que no estemos en juego previo
@@ -130,7 +138,6 @@ while True:
                     if pygame.Rect(ancho - 100, 10, 80, 30).collidepoint(mouse_pos):
                         en_juego = False  # Volver a la pantalla de juego previo
                         en_juego_previo = True  # Asegurarse de que estamos en la pantalla previa
-                        #global fondo_y  # Asegurarse de que se detenga la animación
                         fondo_y = 0  # Reiniciar la posición del fondo
 
     if en_inicio:
@@ -140,4 +147,9 @@ while True:
         mouse_pos = pygame.mouse.get_pos()
         dibujar_juego_previo(mouse_pos)
     elif en_juego:
+        if contador_activo:  # Solo actualizar kilómetros si el contador está activo
+            kilometros_recorridos += 0.01  # Incrementar kilómetros por cada segundo
         dibujar_juego()
+    
+    # Controlar el tiempo
+    clock.tick(60)  # Limitar a 60 FPS
