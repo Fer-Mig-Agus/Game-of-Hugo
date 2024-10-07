@@ -68,7 +68,6 @@ preguntas = [
     ("¿Qué instrumento mide la temperatura?", ["Barómetro", "Termómetro", "Higrómetro", "Anemómetro"], "Termómetro"),
 ]
 
-
 # Función para dibujar botones
 def dibujar_boton(texto, pos_x, pos_y, ancho, alto, hover=False):
     fuente = pygame.font.Font(None, 30)
@@ -154,6 +153,15 @@ def dibujar_pregunta():
     for i, respuesta in enumerate(respuestas_actuales):
         dibujar_boton(respuesta, ancho // 2 - 120, alto // 2 + (i * 50), 240, 40)
 
+# Función para mostrar mensaje de juego terminado
+def mostrar_mensaje_terminado():
+    pantalla.fill(blanco)
+    fuente = pygame.font.Font(None, 50)
+    mensaje = fuente.render("Juego Terminado", True, negro)
+    pantalla.blit(mensaje, (ancho // 2 - mensaje.get_width() // 2, alto // 2 - mensaje.get_height() // 2))
+    pygame.display.flip()
+    pygame.time.delay(2000)  # Esperar 2 segundos
+
 # Bucle principal del juego
 clock = pygame.time.Clock()
 while True:
@@ -176,6 +184,11 @@ while True:
                         en_juego_previo = False
                         en_juego = True
                         contador_activo = True
+                        preguntas_realizadas = 0  # Reiniciar contador de preguntas
+                        random.shuffle(preguntas[9:])  # Barajar preguntas desde la décima
+                        pregunta_actual = preguntas[0]  # Iniciar con la primera pregunta
+                        respuestas_actuales = pregunta_actual[1][:]  # Copiar las respuestas
+                        random.shuffle(respuestas_actuales)  # Mezclar las respuestas
                     elif pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
                         en_inicio = True
                         en_juego_previo = False
@@ -193,10 +206,30 @@ while True:
                                     acertadas += 1
                                 else:  # Respuesta incorrecta
                                     errores += 1
-                                    #global vidas
                                     vidas -= 1
+
                                 pregunta_actual = None  # Resetea la pregunta actual
                                 preguntas_realizadas += 1  # Incrementa preguntas realizadas
+
+                                # Si se han respondido todas las preguntas o se han acabado las vidas
+                                if preguntas_realizadas >= 20 or vidas <= 0:
+                                    if vidas <= 0:
+                                        mostrar_mensaje_terminado()
+                                    # Volver al menú
+                                    en_juego = False
+                                    en_inicio = True
+                                    fondo_y = 0
+                                    preguntas_realizadas = 0  # Reiniciar contador de preguntas
+                                    acertadas = 0
+                                    errores = 0
+                                    vidas = 5  # Reiniciar vidas
+                                    break
+
+                                # Si hay más preguntas, selecciona la siguiente
+                                if preguntas_realizadas < len(preguntas):
+                                    pregunta_actual = preguntas[preguntas_realizadas]  # Siguiente pregunta
+                                    respuestas_actuales = pregunta_actual[1][:]  # Copiar las respuestas
+                                    random.shuffle(respuestas_actuales)  # Mezclar las respuestas
                                 break
 
     if en_inicio:
@@ -210,8 +243,8 @@ while True:
             kilometros_recorridos += 0.01  # Incrementar kilómetros por cada segundo
             
             # Activar pregunta si llega a un múltiplo de 10
-            if int(kilometros_recorridos) % 10 == 0 and pregunta_actual is None:
-                pregunta_actual = random.choice(preguntas)
+            if int(kilometros_recorridos) % 10 == 0 and pregunta_actual is None and preguntas_realizadas < len(preguntas):
+                pregunta_actual = preguntas[preguntas_realizadas]  # Siguiente pregunta
                 respuestas_actuales = pregunta_actual[1][:]  # Copiar las respuestas
                 random.shuffle(respuestas_actuales)  # Mezclar las respuestas
 
