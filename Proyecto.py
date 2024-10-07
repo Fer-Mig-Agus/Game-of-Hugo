@@ -1,12 +1,13 @@
 import pygame
 import sys
+import random
 
 # Inicializar Pygame
 pygame.init()
 
 # Configurar la pantalla
-ancho, alto = 800, 630  # Aumentar 30px en la altura
-pantalla = pygame.display.set_mode((ancho, alto))  # No se permite redimensionar
+ancho, alto = 800, 630
+pantalla = pygame.display.set_mode((ancho, alto))
 pygame.display.set_caption("Juega con Hugo")
 
 # Cargar imágenes
@@ -19,7 +20,6 @@ fondo_juego_previo = pygame.transform.scale(fondo_juego_previo_original, (ancho,
 fondo_juego_original = pygame.image.load("vias.PNG")
 fondo_juego = pygame.transform.scale(fondo_juego_original, (ancho, alto))
 
-# Cargar imágenes de Hugo y el vagón y redimensionar
 hugo_imagen = pygame.image.load("hugo.png")
 hugo_imagen = pygame.transform.scale(hugo_imagen, (25, 50))
 vagon_imagen = pygame.image.load("vagon.png")
@@ -29,17 +29,28 @@ vagon_imagen = pygame.transform.scale(vagon_imagen, (50, 100))
 negro = (0, 0, 0)
 blanco = (255, 255, 255)
 
-# Variables para la animación y el juego
+# Variables del juego
 fondo_y = 0
-preguntas_realizadas = 0  # Estado inicial
-acertadas = 0  # Estado inicial
-errores = 0  # Estado inicial
-vidas = 5  # Estado inicial
-kilometros_recorridos = 0  # Estado inicial
-contador_activo = False  # Para controlar el inicio del conteo de kilómetros
+preguntas_realizadas = 0
+acertadas = 0
+errores = 0
+vidas = 5
+kilometros_recorridos = 0
+contador_activo = False
 en_inicio = True
 en_juego_previo = False
 en_juego = False
+pregunta_actual = None
+respuestas_actuales = []
+
+# Preguntas y respuestas
+preguntas = [
+    ("¿Cuál es la capital de Francia?", ["Berlín", "Madrid", "París", "Lisboa"], "París"),
+    ("¿Cuántos continentes hay en el mundo?", ["5", "6", "7", "8"], "7"),
+    ("¿Quién escribió 'Cien años de soledad'?", ["Gabriel García Márquez", "Pablo Neruda", "Jorge Luis Borges", "Julio Cortázar"], "Gabriel García Márquez"),
+    ("¿Cuál es el planeta más grande del sistema solar?", ["Marte", "Júpiter", "Saturno", "Tierra"], "Júpiter"),
+    ("¿En qué año llegó el hombre a la luna?", ["1969", "1970", "1965", "1975"], "1969"),
+]
 
 # Función para dibujar botones
 def dibujar_boton(texto, pos_x, pos_y, ancho, alto, hover=False):
@@ -87,7 +98,7 @@ def animar_fondo():
 # Función para dibujar la pantalla de juego
 def dibujar_juego():
     global kilometros_recorridos
-    animar_fondo()  # Dibuja la animación
+    animar_fondo()
     fuente = pygame.font.Font(None, 20)
 
     # Labels
@@ -105,11 +116,29 @@ def dibujar_juego():
     pantalla.blit(label_kilometros, (10, 130))
 
     # Navbar
-    dibujar_boton("Volver", ancho - 100, 10, 80, 30)  # Botón Volver en la navbar
+    dibujar_boton("Volver", ancho - 100, 10, 80, 30)
+
+    # Si hay una pregunta activa, dibujarla
+    if pregunta_actual:
+        dibujar_pregunta()
+
     pygame.display.flip()
 
+# Función para dibujar la ventana de pregunta
+def dibujar_pregunta():
+    fuente = pygame.font.Font(None, 30)
+    rect_pregunta = pygame.Rect(ancho // 2 - 200, alto // 2 - 100, 400, 200)
+    pygame.draw.rect(pantalla, blanco, rect_pregunta)
+    pygame.draw.rect(pantalla, negro, rect_pregunta, 3)
+
+    pregunta_texto = fuente.render(pregunta_actual[0], True, negro)
+    pantalla.blit(pregunta_texto, (ancho // 2 - pregunta_texto.get_width() // 2, alto // 2 - 80))
+
+    for i, respuesta in enumerate(respuestas_actuales):
+        dibujar_boton(respuesta, ancho // 2 - 120, alto // 2 + (i * 50), 240, 40)
+
 # Bucle principal del juego
-clock = pygame.time.Clock()  # Para controlar el tiempo
+clock = pygame.time.Clock()
 while True:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
@@ -129,16 +158,29 @@ while True:
                     if pygame.Rect(ancho // 2 - 100, 300, 200, 50).collidepoint(mouse_pos):
                         en_juego_previo = False
                         en_juego = True
-                        #global contador_activo
-                        contador_activo = True  # Activar el contador de kilómetros
+                        contador_activo = True
                     elif pygame.Rect(ancho // 2 - 100, 400, 200, 50).collidepoint(mouse_pos):
-                        en_inicio = True  # Regresa al menú
-                        en_juego_previo = False  # Asegúrate de que no estemos en juego previo
+                        en_inicio = True
+                        en_juego_previo = False
                 elif en_juego:
                     if pygame.Rect(ancho - 100, 10, 80, 30).collidepoint(mouse_pos):
-                        en_juego = False  # Volver a la pantalla de juego previo
-                        en_juego_previo = True  # Asegurarse de que estamos en la pantalla previa
-                        fondo_y = 0  # Reiniciar la posición del fondo
+                        en_juego = False
+                        en_juego_previo = True
+                        fondo_y = 0
+
+                    # Si hay una pregunta activa, manejar las respuestas
+                    if pregunta_actual:
+                        for i, respuesta in enumerate(respuestas_actuales):
+                            if pygame.Rect(ancho // 2 - 120, alto // 2 + (i * 50), 240, 40).collidepoint(mouse_pos):
+                                if respuesta == pregunta_actual[2]:  # Si la respuesta es correcta
+                                    acertadas += 1
+                                else:  # Respuesta incorrecta
+                                    errores += 1
+                                    #global vidas
+                                    vidas -= 1
+                                pregunta_actual = None  # Resetea la pregunta actual
+                                preguntas_realizadas += 1  # Incrementa preguntas realizadas
+                                break
 
     if en_inicio:
         mouse_pos = pygame.mouse.get_pos()
@@ -149,7 +191,14 @@ while True:
     elif en_juego:
         if contador_activo:  # Solo actualizar kilómetros si el contador está activo
             kilometros_recorridos += 0.01  # Incrementar kilómetros por cada segundo
+            
+            # Activar pregunta si llega a un múltiplo de 10
+            if int(kilometros_recorridos) % 10 == 0 and pregunta_actual is None:
+                pregunta_actual = random.choice(preguntas)
+                respuestas_actuales = pregunta_actual[1][:]  # Copiar las respuestas
+                random.shuffle(respuestas_actuales)  # Mezclar las respuestas
+
         dibujar_juego()
-    
+
     # Controlar el tiempo
     clock.tick(60)  # Limitar a 60 FPS
