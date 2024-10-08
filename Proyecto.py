@@ -2,6 +2,8 @@ import pygame
 import sys
 import random
 
+#Este es una nueva linea
+
 # Inicializar Pygame
 pygame.init()
 
